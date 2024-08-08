@@ -4,7 +4,9 @@ import socket
 import threading
 import os
 
-storage_path = "nuvem"
+#Aqui coloque o caminho da pasta que você escolheu para colocar o arquivo, 
+# o nome da pasta deve ser o mesmo que foi colocado na var mover. 
+storage_path = "/home/henriqueqr/Documentos/Codigos/Python/Middleware/nuvem/"
 
 def handle_client(conn):
     with conn:
@@ -17,14 +19,16 @@ def handle_client(conn):
             file_content = conn.recv(1024)
             with open(nome, 'wb') as f:
                 f.write(file_content)
-            mover = "mv " + nome + " " + storage_path
+            mover = "mv " + nome +" nuvem"
             os.system(mover)
             conn.sendall(b'OK')
         elif request.startswith("DOWNLOAD"):
-            file_path = os.path.join(storage_path, request.split()[1])
+            conn.send("OK".encode())
+            nome = conn.recv(1024).decode
+            file_path = storage_path + nome
             if os.path.exists(file_path):
-                with open(file_path, 'rb') as f:
-                    conn.sendall(f.read())
+                f = open(file_path, 'rb')
+                conn.sendall(f.read())
             else:
                 conn.sendall(b'File not found')
         else:

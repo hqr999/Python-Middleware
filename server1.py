@@ -60,18 +60,21 @@ def handle_client(conn):
             distribute_file(nome, file_bytes)
             #file.close()
             conn.send("Terminado".encode())
-        #elif request.startswith("DOWNLOAD"):
-            #file_path = request.split()[1]
-            #with lock:
-            #   server = file_registry.get(file_path)
-            #f server:
-             #   with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            #        s.connect(server)
-             #       s.sendall(b'DOWNLOAD ' + file_path.encode())
-             #       response = s.recv(1024)
-             #       conn.sendall(response)
-            #else:
-             #   conn.sendall(b'File not found')
+        elif request.startswith("DOWNLOAD"):
+            conn.send("OK".encode())
+            file_path = s.recv(1024).decode()
+            with lock:
+               server = file_registry.get(file_path)
+            if server:
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.connect(server)
+                s.send(b'DOWNLOAD ')
+                s.recv(1024).decode()
+                s.sendall(file_path.encode())
+                response = s.recv(1024)
+                conn.sendall(response)
+            else:
+                conn.sendall(b'File not found')
         elif request == "LIST_FILES":
             with lock:
               files = "\n".join(file_registry.keys())

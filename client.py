@@ -25,7 +25,21 @@ def list_files():
     response = s.recv(1024).decode()
     print("Files in the cloud:")
     print(response)
-    
+
+def download_file(filename, download_path):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect(manager_address)
+    s.send(b'DOWNLOAD ')
+    s.recv(1024).decode()
+    s.sendall(filename.encode())
+    response = s.recv(1024)
+    if response == b'File not found':
+        print("File not found")
+    else:
+        f = open(download_path, 'wb')
+        f.write(response)
+        print(f"File {filename} downloaded successfully to {download_path}")
+
 def main():
     while True:
         print("\nOptions:")
@@ -44,7 +58,7 @@ def main():
         elif choice == '2':
             filename = input("Enter the filename to download: ")
             download_path = input("Enter the download path: ")
-            #download_file(filename, download_path)
+            download_file(filename, download_path)
         elif choice == '3':
             list_files()
         elif choice == '4':
