@@ -62,7 +62,7 @@ def handle_client(conn):
             conn.send("Terminado".encode())
         elif request.startswith("DOWNLOAD"):
             conn.send("OK".encode())
-            file_path = s.recv(1024).decode()
+            file_path = conn.recv(1024).decode()
             with lock:
                server = file_registry.get(file_path)
             if server:

@@ -43,29 +43,29 @@ def download_file(filename, download_path):
 def main():
     while True:
         print("\nOptions:")
-        print("1. Upload a file")
-        print("2. Download a file")
-        print("3. List files in the cloud")
-        print("4. Exit")
-        choice = input("Enter your choice: ")
+        print("1. Faça Upload")
+        print("2. Faça Download")
+        print("3. Lista dos arquivos na nuvem")
+        print("4. Sair")
+        choice = input("Sua escolha: ")
 
         if choice == '1':
-            file_path = input("Enter the path of the file to upload: ")
+            file_path = input("De o caminho para o arquivo que quer fazer upload: ")
             if os.path.exists(file_path) == True:
                upload_file(file_path)
             else:
-                file_path = input("Enter the path of the file to upload: ")
+                file_path = input("De o caminho para o arquivo que quer fazer upload: ")
         elif choice == '2':
-            filename = input("Enter the filename to download: ")
-            download_path = input("Enter the download path: ")
+            filename = input("Qual arquivo deseja fazer download: ")
+            download_path = input("De o caminho e o nome para o arquivo: ")
             download_file(filename, download_path)
         elif choice == '3':
             list_files()
         elif choice == '4':
-            print("Exiting...")
+            print("Saindo...")
             break
         else:
-            print("Invalid choice. Please try again.")
+            print("Escolha inválida. Tente de novo!")
 
 if __name__ == '__main__':
     main()

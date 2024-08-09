@@ -23,8 +23,7 @@ def handle_client(conn):
             os.system(mover)
             conn.sendall(b'OK')
         elif request.startswith("DOWNLOAD"):
-            conn.send("OK".encode())
-            nome = conn.recv(1024).decode
+            nome = conn.recv(1024).decode()
             file_path = storage_path + nome
             if os.path.exists(file_path):
                 f = open(file_path, 'rb')
