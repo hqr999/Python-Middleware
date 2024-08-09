@@ -3,8 +3,6 @@ import os
 manager_address = ("localhost", 5000)
 
 def upload_file(file_path):
-    f = open(file_path, 'rb')
-    file_content = f.read()
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print(manager_address[1])
     s.connect(manager_address)
@@ -13,7 +11,15 @@ def upload_file(file_path):
     nome = os.path.basename(file_path)
     s.send(nome.encode())
     s.recv(1024).decode()
-    s.sendall(file_content )
+    file_size = os.path.getsize(file_path)
+    print(file_size)
+    s.send(str(file_size).encode())
+    s.recv(1024).decode()
+    f = open(file_path,'rb')
+    while (bloco := f.read(4096)):
+        s.sendall(bloco)
+    #file_content = f.read()
+    #s.sendall(file_content)
     print(manager_address[0])
     response = s.recv(1024).decode()
     print(response)

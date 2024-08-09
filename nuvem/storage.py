@@ -16,11 +16,24 @@ def handle_client(conn):
             #file_path = os.path.join(storage_path, request.split()[1])
             nome = conn.recv(1024).decode()
             conn.send("OK".encode())
-            file_content = conn.recv(1024)
-            with open(nome, 'wb') as f:
-                f.write(file_content)
-            mover = "mv " + nome +" nuvem"
-            os.system(mover)
+            tamanho = int(conn.recv(1024).decode())
+            conn.send("OK".encode())
+            #file_content = conn.recv(1024)
+            f = open(nome,'wb')
+            received = 0
+            print(tamanho)
+            while received <= tamanho:
+                bloco = conn.recv(4096)
+                if not bloco:
+                    break
+                f.write(bloco)
+                received += len(bloco)
+            #with open(nome, 'wb') as f:
+             #   f.write(file_content)
+            #mover = "mv " + nome +" nuvem"
+            #os.system(mover)
+            print("Estou aqui")
+            f.close()
             conn.sendall(b'OK')
         elif request.startswith("DOWNLOAD"):
             nome = conn.recv(1024).decode()

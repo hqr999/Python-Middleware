@@ -12,7 +12,7 @@ storage_servers = [
 file_registry = {}
 lock = threading.Lock()
 
-def distribute_file(file_path, file_content):
+def distribute_file(file_path,tamanho):
     print("Arquivo " + file_path + " 1 Armazenado")
     server = storage_servers[len(file_registry) % len(storage_servers)]
     print("Arquivo " + file_path + " 2 Armazenado")
@@ -23,7 +23,16 @@ def distribute_file(file_path, file_content):
         s.recv(1024).decode()
         s.send(file_path.encode())
         s.recv(1024).decode()
-        s.sendall(file_content)
+        s.send(str(tamanho).encode())
+        s.recv(1024).decode()
+        #s.sendall(file_content)
+        print(os.path.getsize(file_path)) #Já está errado aqui
+        f = open(file_path,'rb')
+        while (bloco := f.read(4096)):
+            s.sendall(bloco)
+        
+        f.close()
+        os.system("rm " + file_path)    
         response = s.recv(1024).decode()
         if response == "OK":
             with lock:
@@ -48,17 +57,22 @@ def handle_client(conn):
         if request.startswith("UPLOAD"):
             conn.send("OK".encode())
             print(request)
-            file_bytes = b""
             nome = conn.recv(1024).decode()
             conn.send("OK".encode())
-            arq = conn.recv(1024)
-            print(nome)
-            file_bytes = arq
+            tamanho = int(conn.recv(1024).decode())
+            conn.send("OK".encode())
+            f = open(nome,'wb')
+            received = 0
+            while received < tamanho:
+                bloco = conn.recv(4096)
+                if not bloco:
+                    break
+                f.write(bloco)
+                received += len(bloco)
+            print("received=",received," tamanho=",tamanho)
             print("<END>")
-            #file = open(nome,"wb")
-            #file.write(file_bytes)
-            distribute_file(nome, file_bytes)
-            #file.close()
+            distribute_file(nome,tamanho)
+            f.close()
             conn.send("Terminado".encode())
         elif request.startswith("DOWNLOAD"):
             conn.send("OK".encode())
