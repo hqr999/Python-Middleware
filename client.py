@@ -38,12 +38,22 @@ def download_file(filename, download_path):
     s.send(b'DOWNLOAD ')
     s.recv(1024).decode()
     s.sendall(filename.encode())
-    response = s.recv(1024)
-    if response == b'File not found':
+    response = s.recv(1024).decode()
+    s.send("OK".encode())
+    if response == 'File not found':
         print("File not found")
     else:
+        tamanho = int(response)
         f = open(download_path, 'wb')
-        f.write(response)
+        received = 0
+        file_bytes = b''
+        while received < tamanho:
+            bloco = s.recv(4096)
+            if not bloco:
+                break
+            file_bytes += bloco
+            received += len(bloco)
+        f.write(file_bytes)
         print(f"File {filename} downloaded successfully to {download_path}")
 
 def main():

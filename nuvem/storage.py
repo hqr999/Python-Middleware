@@ -42,7 +42,11 @@ def handle_client(conn):
             file_path = storage_path + nome
             if os.path.exists(file_path):
                 f = open(file_path, 'rb')
-                conn.sendall(f.read())
+                conn.send(str(os.path.getsize(file_path)).encode())
+                conn.recv(1024).decode()
+                while (bloco := f.read(4096)):
+                    conn.sendall(bloco)
+                #conn.sendall(f.read())
             else:
                 conn.sendall(b'File not found')
         else:

@@ -87,8 +87,26 @@ def handle_client(conn):
                 s.send(b'DOWNLOAD ')
                 s.recv(1024).decode()
                 s.sendall(file_path.encode())
-                response = s.recv(1024)
-                conn.sendall(response)
+                tamanho = int(s.recv(1024).decode())
+                s.send(b'OK')
+                f = open(file_path,'wb')
+                received = 0
+                file_bytes = b''
+                while received < tamanho:
+                    bloco = conn.recv(4096)
+                    if not bloco:
+                        break
+                    file_bytes += bloco
+                    received += len(bloco)
+                f.write(file_bytes)
+                f.close()
+                f = open(file_path,'rb')
+                conn.send(str(received).encode())
+                conn.recv(1024).decode()
+                while (bloco := f.read(4096)):
+                    conn.sendall(bloco)
+                #response = s.recv(1024)
+                #conn.sendall(response)
             else:
                 conn.sendall(b'File not found')
         elif request == "LIST_FILES":
