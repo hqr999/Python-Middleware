@@ -21,13 +21,15 @@ def handle_client(conn):
             #file_content = conn.recv(1024)
             f = open(nome,'wb')
             received = 0
+            file_bytes = b''
             print(tamanho)
-            while received <= tamanho:
+            while received < tamanho:
                 bloco = conn.recv(4096)
                 if not bloco:
                     break
-                f.write(bloco)
+                file_bytes += bloco
                 received += len(bloco)
+            f.write(file_bytes)
             #with open(nome, 'wb') as f:
              #   f.write(file_content)
             #mover = "mv " + nome +" nuvem"

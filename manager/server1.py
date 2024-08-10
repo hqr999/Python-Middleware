@@ -63,12 +63,14 @@ def handle_client(conn):
             conn.send("OK".encode())
             f = open(nome,'wb')
             received = 0
+            file_bytes = b''
             while received < tamanho:
                 bloco = conn.recv(4096)
                 if not bloco:
                     break
-                f.write(bloco)
+                file_bytes += bloco
                 received += len(bloco)
+            f.write(file_bytes)
             print("received=",received," tamanho=",tamanho)
             print("<END>")
             distribute_file(nome,tamanho)
